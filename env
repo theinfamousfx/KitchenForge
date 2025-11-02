@@ -1,0 +1,22 @@
+# Kitchen Space Development Environment Variables
+# Copy this file to .env and update with your values
+
+# Database Configuration
+POSTGRES_DB=kitchen_db
+POSTGRES_USER=kitchen_user
+POSTGRES_PASSWORD=kitchendbpass
+POSTGRES_PORT=5432
+
+# Backend Configuration
+NODE_ENV=production
+BACKEND_PORT=3000
+LOG_LEVEL=debug
+JWT_SECRET=dev_secret_key_change_in_production
+
+# Frontend Configuration
+FRONTEND_PORT=3000
+NEXT_PUBLIC_API_URL=http://localhost:3000
+API_URL=http://backend:3000
+
+# Docker
+COMPOSE_PROJECT_NAME=kitchen-space-dev
