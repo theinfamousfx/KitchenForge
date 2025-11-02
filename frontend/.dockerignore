@@ -1,0 +1,21 @@
+# Frontend .dockerignore
+
+```
+node_modules
+npm-debug.log
+.git
+.gitignore
+README.md
+.env
+.env.local
+.next
+coverage
+.DS_Store
+.vscode
+.idea
+*.swp
+out
+dist
+```
+
+Create file as: `frontend/.dockerignore`

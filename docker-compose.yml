@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: kitchen-space-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kitchen_db}
+      POSTGRES_USER: ${POSTGRES_USER:-kitchen_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kitchen_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kitchen_user} -d ${POSTGRES_DB:-kitchen_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kitchen-network
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=256MB"
+
+  # Node.js Backend (will be built)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kitchen-space-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kitchen_user}:${POSTGRES_PASSWORD:-kitchen_password}@postgres:5432/${POSTGRES_DB:-kitchen_db}
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - kitchen-network
+    command: npm start
+
+  # React/Next.js Frontend (will be built)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kitchen-space-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+      API_URL: ${API_URL:-http://backend:3000}
+    ports:
+      - "3001:3000"
+    depends_on:
+      - backend
+    networks:
+      - kitchen-network
+    command: npm start
+
+  # pgAdmin for database management (optional, dev only)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: kitchen-space-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@kitchenspace.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - kitchen-network
+    profiles:
+      - dev
+
+networks:
+  kitchen-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
