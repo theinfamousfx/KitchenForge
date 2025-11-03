@@ -1,12 +1,12 @@
 # Copy the contents from [80] into .env file
 cat > .env << 'EOF'
-POSTGRES_DB=kitchen_db
-POSTGRES_USER=kitchen_user
-POSTGRES_PASSWORD=vZqiSa_1uzi8-9ioacyA0kqbNcPSC9wb
+POSTGRES_DB=kitchenforge
+POSTGRES_USER=prophet
+POSTGRES_PASSWORD=D3viant0n3
 NODE_ENV=production
 JWT_SECRET=ejRSSohVmuxBKI42Mf2QjqqES8Mo1uKwo3OUJRKONjY
 NEXT_PUBLIC_API_URL=http://192.168.86.9:3000
 API_URL=http://backend:3000
-PGADMIN_DEFAULT_EMAIL=admin@kitchenspace.local
-PGADMIN_DEFAULT_PASSWORD=admin
+PGADMIN_DEFAULT_EMAIL=prophet
+PGADMIN_DEFAULT_PASSWORD=D3viant0n3
 EOF
