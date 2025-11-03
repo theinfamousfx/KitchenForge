@@ -1,5 +1,6 @@
 # Copy the contents from [80] into .env file
 cat > .env << 'EOF'
+DB_HOST=192.168.86.9
 POSTGRES_DB=kitchenforge
 POSTGRES_USER=prophet
 POSTGRES_PASSWORD=D3viant0n3
